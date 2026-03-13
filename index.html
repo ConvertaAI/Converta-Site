@@ -666,7 +666,7 @@
   // Checkout
   async function checkout(plan){
     try{
-      const res=await fetch('https://api.converta.ai/create-checkout-session',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({plan,billing})});
+      const res=await fetch('https://web-production-f5655.up.railway.app/create-checkout-session',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({plan,billing})});
       const data=await res.json();
       if(data.url)window.location.href=data.url;
     }catch{window.open('https://calendly.com/convertaai/30min','_blank')}
