@@ -23,19 +23,44 @@
     ::-webkit-scrollbar{width:3px}
     ::-webkit-scrollbar-thumb{background:rgba(0,255,229,.3);border-radius:3px}
     a{color:inherit;text-decoration:none}
+    #cursor {
+      position: fixed !important;
+      width: 12px !important;
+      height: 12px !important;
+      background: #00ffe5 !important;
+      border-radius: 50% !important;
+      pointer-events: none !important;
+      z-index: 999999 !important;
+      top: 0;
+      left: 0;
+      display: block !important;
+      box-shadow: 0 0 10px #00ffe5;
+    }
+    #cursor-ring {
+      position: fixed !important;
+      width: 36px !important;
+      height: 36px !important;
+      border: 1.5px solid rgba(0,255,229,.7) !important;
+      border-radius: 50% !important;
+      pointer-events: none !important;
+      z-index: 999998 !important;
+      top: 0;
+      left: 0;
+      display: block !important;
+    }
 
     /* CURSOR */
-    #cursor{position:fixed;width:14px;height:14px;background:rgba(0,255,229,1);-webkit-border-radius:50%;border-radius:50%;pointer-events:none;z-index:99999;top:-100px;left:-100px;-webkit-transform:none;transform:none}
-    #cursor-ring{position:fixed;width:40px;height:40px;border:1.5px solid rgba(0,255,229,.7);-webkit-border-radius:50%;border-radius:50%;pointer-events:none;z-index:99998;top:-100px;left:-100px;-webkit-transform:none;transform:none}
+    
+    
 
     /* GRID CANVAS */
     #grid-canvas{position:fixed;inset:0;z-index:0;pointer-events:none;opacity:.5}
 
     /* GRAIN */
-    body::before{content:'';position:fixed;inset:0;z-index:1;pointer-events:none !important;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.04'/%3E%3C/svg%3E");background-size:200px;pointer-events:none;opacity:.35}
+    body::before{display:none}
 
     /* SCANLINES */
-    body::after{content:'';position:fixed;inset:0;z-index:2;pointer-events:none !important;background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,0,0,.04) 2px,rgba(0,0,0,.04) 4px);pointer-events:none}
+    body::after{display:none}
 
     .container{max-width:1200px;margin:0 auto;padding:0 32px;position:relative;z-index:10}
     section{position:relative;z-index:10}
@@ -298,7 +323,7 @@
     <p class="hero-sub">Converta.AI installs an AI phone receptionist that captures every lead, books appointments, and handles FAQs — around the clock, for any local business.</p>
     <div class="hero-ctas">
       <a href="#pricing" class="btn-primary"><span>▶</span> View Plans</a>
-      <a href="https://calendly.com/YOUR_LINK" target="_blank" class="btn-secondary">Book Demo →</a>
+      <a href="https://calendly.com/convertaai/30min" target="_blank" class="btn-secondary">Book Demo →</a>
     </div>
     <div class="live-widget">
       <div class="call-icon">📞</div>
@@ -546,7 +571,7 @@
       <p>Join local businesses who let Aria handle the phones while they focus on their work.</p>
       <div class="cta-btns">
         <a href="#pricing" class="btn-primary"><span>▶</span> View Plans & Pricing</a>
-        <a href="https://calendly.com/YOUR_LINK" target="_blank" class="btn-secondary">Book a Free Demo →</a>
+        <a href="https://calendly.com/convertaai/30min" target="_blank" class="btn-secondary">Book a Free Demo →</a>
       </div>
     </div>
   </div>
@@ -571,39 +596,23 @@
 <script>
   document.documentElement.classList.add("js-loaded");
   // Cursor
-  (function(){
-    var dot  = document.getElementById('cursor');
-    var ring = document.getElementById('cursor-ring');
-    if(!dot||!ring) return;
-    var mx=-100,my=-100,rx=-100,ry=-100;
-
-    document.addEventListener('mousemove',function(e){
-      mx=e.clientX; my=e.clientY;
-      dot.style.left  = (mx-7)+'px';
-      dot.style.top   = (my-7)+'px';
-    });
-
-    function loop(){
-      rx+=(mx-rx)*0.12; ry+=(my-ry)*0.12;
-      ring.style.left = (rx-20)+'px';
-      ring.style.top  = (ry-20)+'px';
-      requestAnimationFrame(loop);
-    }
-    loop();
-
-    document.querySelectorAll('a,button,.faq-item,.feature-card,.step-card,.plan-card,.industry-card,.testi-card').forEach(function(el){
-      el.addEventListener('mouseenter',function(){
-        dot.style.transform='scale(2)';
-        ring.style.transform='scale(1.5)';
-        ring.style.borderColor='rgba(0,255,229,.9)';
-      });
-      el.addEventListener('mouseleave',function(){
-        dot.style.transform='scale(1)';
-        ring.style.transform='scale(1)';
-        ring.style.borderColor='rgba(0,255,229,.6)';
-      });
-    });
-  })();
+  var _dot = document.getElementById('cursor');
+  var _ring = document.getElementById('cursor-ring');
+  var _mx = -200, _my = -200, _rx = -200, _ry = -200;
+  document.addEventListener('mousemove', function(e) {
+    _mx = e.clientX;
+    _my = e.clientY;
+    _dot.style.left = (_mx - 6) + 'px';
+    _dot.style.top = (_my - 6) + 'px';
+  });
+  function _animRing() {
+    _rx += (_mx - _rx) * 0.12;
+    _ry += (_my - _ry) * 0.12;
+    _ring.style.left = (_rx - 18) + 'px';
+    _ring.style.top = (_ry - 18) + 'px';
+    requestAnimationFrame(_animRing);
+  }
+  _animRing();
 
   // Grid canvas
   (function(){
@@ -660,7 +669,7 @@
       const res=await fetch('https://api.converta.ai/create-checkout-session',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({plan,billing})});
       const data=await res.json();
       if(data.url)window.location.href=data.url;
-    }catch{window.open('https://calendly.com/YOUR_LINK','_blank')}
+    }catch{window.open('https://calendly.com/convertaai/30min','_blank')}
   }
 
   // Rotating call messages
