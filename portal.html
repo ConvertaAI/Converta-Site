@@ -26,8 +26,16 @@ body::before{content:'';position:fixed;inset:0;background-image:
 
 /* ── LOGIN ── */
 #login-screen{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;z-index:100;background:var(--bg)}
-.login-card{width:420px;border:1px solid var(--border-bright);border-radius:16px;background:var(--bg2);padding:48px 40px;position:relative;overflow:hidden}
-.login-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,var(--teal),transparent)}
+@property --angle{syntax:'<angle>';initial-value:0deg;inherits:false}
+@keyframes spin{to{--angle:360deg}}
+@keyframes pulse-glow{0%,100%{box-shadow:0 0 30px rgba(0,255,229,.08),0 0 60px rgba(0,255,229,.04)}50%{box-shadow:0 0 50px rgba(0,255,229,.18),0 0 100px rgba(0,255,229,.08)}}
+.login-card{width:420px;border-radius:16px;background:var(--bg2);padding:48px 40px;position:relative;
+  animation:pulse-glow 3s ease-in-out infinite;
+  background-clip:padding-box}
+.login-card::before{content:'';position:absolute;inset:-2px;border-radius:18px;z-index:-1;
+  background:conic-gradient(from var(--angle),transparent 20%,#00ffe5 40%,#00fff0 50%,#00ffe5 60%,transparent 80%);
+  animation:spin 4s linear infinite}
+.login-card::after{content:'';position:absolute;inset:0px;border-radius:16px;background:var(--bg2);z-index:-1}
 .login-logo{font-family:'Orbitron',monospace;font-size:22px;font-weight:900;color:var(--teal);letter-spacing:2px;margin-bottom:8px}
 .login-logo span{color:rgba(232,245,242,.3)}
 .login-sub{font-size:13px;color:var(--text-dim);margin-bottom:36px}
@@ -164,14 +172,14 @@ tr:hover td{background:var(--teal-dim)}
 <div id="login-screen">
   <div class="login-card">
     <div class="login-logo">CONVERTA<span>.AI</span></div>
-    <div class="login-sub">Sign in to your portal</div>
+    <div class="login-sub">Sign in to Aria's Reception Portal</div>
     <label class="login-label">Email</label>
     <input class="login-input" type="email" id="login-email" placeholder="you@example.com" onkeydown="if(event.key==='Enter')doLogin()"/>
     <label class="login-label">Password</label>
     <input class="login-input" type="password" id="login-pass" placeholder="••••••••" onkeydown="if(event.key==='Enter')doLogin()"/>
     <div class="login-error" id="login-error">Invalid credentials. Try again.</div>
     <button class="login-btn" onclick="doLogin()">SIGN IN →</button>
-  <p style="font-size:12px;color:var(--text-dim);margin-top:16px;text-align:center">Need access? Contact <span style="color:var(--teal)">support@converta.ai</span></p>
+  <p style="font-size:12px;color:var(--text-dim);margin-top:16px;text-align:center">Need access? Contact <span style="color:var(--teal)"><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="40333530302f32346e232f2e362532342100272d21292c6e232f2d">[email&#160;protected]</a></span></p>
     </div>
   </div>
 </div>
@@ -209,7 +217,7 @@ tr:hover td{background:var(--teal-dim)}
   </div>
 </div>
 
-<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
+<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
 // ── AUTH ──
 let currentUser = null;
 
@@ -657,9 +665,4 @@ function addFaq() {
   const list = document.getElementById('faq-list');
   const div = document.createElement('div');
   div.className = 'faq-item';
-  div.innerHTML = `<div style="flex:1"><input placeholder="Question" style="background:var(--bg3);border:1px solid var(--border);border-radius:6px;padding:9px 12px;color:var(--text);font-size:13px;font-family:DM Sans,sans-serif;outline:none;width:100%;margin-bottom:6px"/><input placeholder="Answer" style="background:var(--bg3);border:1px solid var(--border);border-radius:6px;padding:9px 12px;color:var(--text);font-size:13px;font-family:DM Sans,sans-serif;outline:none;width:100%"/></div><button class="faq-remove" onclick="this.closest('.faq-item').remove()">×</button>`;
-  list.appendChild(div);
-}
-
-function saveSettings() {
-  const btn = document.querySelector('.save
+  div.innerHTML = `<div style="flex:1"><input placeholder="Question" style="background:var(--bg3);border:1px solid var(--border);border-radius:6px;padding:9px 12px;color:var(--text);font-size:13px;font-famil
