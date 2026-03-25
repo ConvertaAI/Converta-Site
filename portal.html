@@ -179,7 +179,7 @@ tr:hover td{background:var(--teal-dim)}
     <input class="login-input" type="password" id="login-pass" placeholder="••••••••" onkeydown="if(event.key==='Enter')doLogin()"/>
     <div class="login-error" id="login-error">Invalid credentials. Try again.</div>
     <button class="login-btn" onclick="doLogin()">SIGN IN →</button>
-  <p style="font-size:12px;color:var(--text-dim);margin-top:16px;text-align:center">Need access? <a href="/cdn-cgi/l/email-protection#780b0d0808170a0c561b17160e1d0a0c19381f15191114561b1715" style="color:var(--teal);text-decoration:none"><span class="__cf_email__" data-cfemail="2b585e5b5b44595f054844455d4e595f4a6b4c464a424705484446">[email&#160;protected]</span></a></p>
+  <p style="font-size:12px;color:var(--text-dim);margin-top:16px;text-align:center">Need access? <a id="support-link" style="color:var(--teal);text-decoration:none;cursor:pointer"></a></p>
     </div>
   </div>
 </div>
@@ -221,8 +221,28 @@ tr:hover td{background:var(--teal-dim)}
 // ── AUTH ──
 let currentUser = null;
 
+// Build support email client-side to avoid Cloudflare obfuscation
+document.addEventListener('DOMContentLoaded', () => {
+  const el = document.getElementById('support-link');
+  if (el) {
+    const e = ['support.converta', 'gmail.com'].join('@');
+    el.textContent = e;
+    el.href = 'mailto:' + e;
+  }
+});
+
+// Simple hash for local auth check
+async function hashPass(str) {
+  const buf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(str));
+  return Array.from(new Uint8Array(buf)).map(b=>b.toString(16).padStart(2,'0')).join('');
+}
+
+// Admin hash: SHA-256 of your chosen password
+// To update: open browser console, run: crypto.subtle.digest('SHA-256', new TextEncoder().encode('yourpassword')).then(b=>console.log(Array.from(new Uint8Array(b)).map(x=>x.toString(16).padStart(2,'0')).join('')))
+const ADMIN_HASH = 'b084d079609b7ad1b948c6968858e98677ad93a389b600b394a9100b5376b85f';
+
 async function doLogin() {
-  const email   = document.getElementById('login-email').value.trim();
+  const email   = document.getElementById('login-email').value.trim().toLowerCase();
   const pass    = document.getElementById('login-pass').value;
   const btn     = document.querySelector('.login-btn');
   const errEl   = document.getElementById('login-error');
@@ -237,11 +257,10 @@ async function doLogin() {
   btn.textContent = 'SIGNING IN...';
   btn.disabled = true;
 
-  // Timeout after 8 seconds
-  const controller = new AbortController();
-  const timeout = setTimeout(() => controller.abort(), 8000);
-
+  // Try Railway backend first
   try {
+    const controller = new AbortController();
+    const timeout = setTimeout(() => controller.abort(), 6000);
     const res = await fetch('https://web-production-46fe1e.up.railway.app/portal-login', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -249,48 +268,43 @@ async function doLogin() {
       signal: controller.signal
     });
     clearTimeout(timeout);
-
-    if (res.status === 401) {
-      errEl.textContent = 'Invalid email or password. Please try again.';
-      errEl.style.display = 'block';
-      btn.textContent = 'SIGN IN →';
-      btn.disabled = false;
-      return;
+    if (res.ok) {
+      const data = await res.json();
+      if (data.user) {
+        currentUser = data.user;
+        document.getElementById('login-screen').style.display = 'none';
+        document.getElementById('app').style.display = 'block';
+        initApp();
+        return;
+      }
+      if (res.status === 401) {
+        errEl.textContent = 'Invalid email or password.';
+        errEl.style.display = 'block';
+        btn.textContent = 'SIGN IN →';
+        btn.disabled = false;
+        return;
+      }
     }
+  } catch(e) {
+    // Backend unreachable — fall through to local check
+    console.log('Backend unreachable, trying local auth');
+  }
 
-    if (!res.ok) {
-      errEl.textContent = 'Server error (' + res.status + '). Please try again.';
-      errEl.style.display = 'block';
-      btn.textContent = 'SIGN IN →';
-      btn.disabled = false;
-      return;
-    }
-
-    const data = await res.json();
-    if (!data.user) {
-      errEl.textContent = 'Invalid credentials. Please try again.';
-      errEl.style.display = 'block';
-      btn.textContent = 'SIGN IN →';
-      btn.disabled = false;
-      return;
-    }
-
-    currentUser = data.user;
+  // Local fallback: check against hashed admin password
+  const inputHash = await hashPass(pass);
+  const adminEmail = ['support.converta','gmail.com'].join('@');
+  if (email === adminEmail && inputHash === ADMIN_HASH) {
+    currentUser = { email, role: 'admin', name: 'Marcus', biz: 'Converta.AI', isFallback: true };
     document.getElementById('login-screen').style.display = 'none';
     document.getElementById('app').style.display = 'block';
     initApp();
-
-  } catch(e) {
-    clearTimeout(timeout);
-    if (e.name === 'AbortError') {
-      errEl.textContent = 'Request timed out. Check your connection and try again.';
-    } else {
-      errEl.textContent = 'Connection error: ' + e.message;
-    }
-    errEl.style.display = 'block';
-    btn.textContent = 'SIGN IN →';
-    btn.disabled = false;
+    return;
   }
+
+  errEl.textContent = 'Invalid email or password. Please try again.';
+  errEl.style.display = 'block';
+  btn.textContent = 'SIGN IN →';
+  btn.disabled = false;
 }
 
 function logout() {
