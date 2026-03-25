@@ -179,7 +179,7 @@ tr:hover td{background:var(--teal-dim)}
     <input class="login-input" type="password" id="login-pass" placeholder="••••••••" onkeydown="if(event.key==='Enter')doLogin()"/>
     <div class="login-error" id="login-error">Invalid credentials. Try again.</div>
     <button class="login-btn" onclick="doLogin()">SIGN IN →</button>
-  <p style="font-size:12px;color:var(--text-dim);margin-top:16px;text-align:center">Need access? <a href="mailto:support.converta@gmail.com" style="color:var(--teal);text-decoration:none">support.converta@gmail.com</a></p>
+  <p style="font-size:12px;color:var(--text-dim);margin-top:16px;text-align:center">Need access? <a href="/cdn-cgi/l/email-protection#780b0d0808170a0c561b17160e1d0a0c19381f15191114561b1715" style="color:var(--teal);text-decoration:none"><span class="__cf_email__" data-cfemail="2b585e5b5b44595f054844455d4e595f4a6b4c464a424705484446">[email&#160;protected]</span></a></p>
     </div>
   </div>
 </div>
@@ -217,36 +217,79 @@ tr:hover td{background:var(--teal-dim)}
   </div>
 </div>
 
-<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
+<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
 // ── AUTH ──
 let currentUser = null;
 
 async function doLogin() {
-  const email = document.getElementById('login-email').value.trim();
-  const pass  = document.getElementById('login-pass').value;
-  const btn   = document.querySelector('.login-btn');
+  const email   = document.getElementById('login-email').value.trim();
+  const pass    = document.getElementById('login-pass').value;
+  const btn     = document.querySelector('.login-btn');
+  const errEl   = document.getElementById('login-error');
+  errEl.style.display = 'none';
+
+  if (!email || !pass) {
+    errEl.textContent = 'Please enter your email and password.';
+    errEl.style.display = 'block';
+    return;
+  }
+
   btn.textContent = 'SIGNING IN...';
+  btn.disabled = true;
+
+  // Timeout after 8 seconds
+  const controller = new AbortController();
+  const timeout = setTimeout(() => controller.abort(), 8000);
 
   try {
     const res = await fetch('https://web-production-46fe1e.up.railway.app/portal-login', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ email, password: pass })
+      body: JSON.stringify({ email, password: pass }),
+      signal: controller.signal
     });
-    const data = await res.json();
-    if (!res.ok || !data.user) {
-      document.getElementById('login-error').style.display = 'block';
+    clearTimeout(timeout);
+
+    if (res.status === 401) {
+      errEl.textContent = 'Invalid email or password. Please try again.';
+      errEl.style.display = 'block';
       btn.textContent = 'SIGN IN →';
+      btn.disabled = false;
       return;
     }
+
+    if (!res.ok) {
+      errEl.textContent = 'Server error (' + res.status + '). Please try again.';
+      errEl.style.display = 'block';
+      btn.textContent = 'SIGN IN →';
+      btn.disabled = false;
+      return;
+    }
+
+    const data = await res.json();
+    if (!data.user) {
+      errEl.textContent = 'Invalid credentials. Please try again.';
+      errEl.style.display = 'block';
+      btn.textContent = 'SIGN IN →';
+      btn.disabled = false;
+      return;
+    }
+
     currentUser = data.user;
     document.getElementById('login-screen').style.display = 'none';
     document.getElementById('app').style.display = 'block';
     initApp();
+
   } catch(e) {
-    document.getElementById('login-error').textContent = 'Connection error. Try again.';
-    document.getElementById('login-error').style.display = 'block';
+    clearTimeout(timeout);
+    if (e.name === 'AbortError') {
+      errEl.textContent = 'Request timed out. Check your connection and try again.';
+    } else {
+      errEl.textContent = 'Connection error: ' + e.message;
+    }
+    errEl.style.display = 'block';
     btn.textContent = 'SIGN IN →';
+    btn.disabled = false;
   }
 }
 
@@ -663,6 +706,4 @@ function closeModal() {
 
 function addFaq() {
   const list = document.getElementById('faq-list');
-  const div = document.createElement('div');
-  div.className = 'faq-item';
-  div.innerHTML = `<div style="flex:1"><input placeholder="Question" style="background:var(--bg3);border:1px solid var(--border);border-radius:6px;padding:9px 12px;color:var(--text);font-size:13px;font-famil
+  const div = document.cr
