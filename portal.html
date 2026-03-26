@@ -241,45 +241,13 @@ tr:hover td{background:var(--teal-dim)}
 
     setBtn('SIGNING IN...', true);
 
-    // Try Railway backend first, fall back to local hash check
-    var controller = new AbortController();
-    var timer = setTimeout(function() { controller.abort(); }, 7000);
-
-    fetch('https://web-production-46fe1e.up.railway.app/portal-login', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ email: email, password: pass }),
-      signal: controller.signal
-    })
-    .then(function(res) {
-      clearTimeout(timer);
-      return res.json().then(function(data) {
-        return { ok: res.ok, status: res.status, data: data };
-      });
-    })
-    .then(function(result) {
-      if (result.ok && result.data && result.data.user) {
-        loginSuccess(result.data.user);
-      } else if (result.status === 401) {
-        showError('Invalid email or password. Please try again.');
-        setBtn('SIGN IN →', false);
-      } else {
-        // Backend error — try local
-        tryLocalAuth(email, pass);
-      }
-    })
-    .catch(function() {
-      clearTimeout(timer);
-      // Backend unreachable — try local hash
-      tryLocalAuth(email, pass);
-    });
-  }
-
-  function tryLocalAuth(email, pass) {
     hashPass(pass).then(function(hash) {
       var match = null;
       for (var i = 0; i < USERS.length; i++) {
-        if (USERS[i].email === email && USERS[i].hash === hash) { match = USERS[i]; break; }
+        if (USERS[i].email === email && USERS[i].hash === hash) {
+          match = USERS[i];
+          break;
+        }
       }
       if (match) {
         loginSuccess({ email: match.email, role: match.role, name: match.name, biz: match.biz });
