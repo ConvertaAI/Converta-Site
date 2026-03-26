@@ -202,8 +202,10 @@ tr:hover td{background:var(--teal-dim)}
 
   // ── Auth ──
   var currentUser = null;
-  var ADMIN_HASH = 'b084d079609b7ad1b948c6968858e98677ad93a389b600b394a9100b5376b85f';
-  var ADMIN_EMAIL = 'admin@converta.ai';
+  var USERS = [
+    { email: 'admin@converta.ai',      hash: 'b084d079609b7ad1b948c6968858e98677ad93a389b600b394a9100b5376b85f', role: 'admin',  name: 'Marcus',       biz: 'Converta.AI' },
+    { email: 'democlient@converta.ai', hash: 'd3ad9315b7be5dd53b31a273b3b3aba5defe700808305aa16a3062b76658a791', role: 'client', name: 'Dr. Marcus B.', biz: 'Bright Smile Dental' },
+  ];
 
   function hashPass(str) {
     return window.crypto.subtle.digest('SHA-256', new TextEncoder().encode(str)).then(function(buf) {
@@ -275,8 +277,12 @@ tr:hover td{background:var(--teal-dim)}
 
   function tryLocalAuth(email, pass) {
     hashPass(pass).then(function(hash) {
-      if (email === ADMIN_EMAIL && hash === ADMIN_HASH) {
-        loginSuccess({ email: email, role: 'admin', name: 'Marcus', biz: 'Converta.AI' });
+      var match = null;
+      for (var i = 0; i < USERS.length; i++) {
+        if (USERS[i].email === email && USERS[i].hash === hash) { match = USERS[i]; break; }
+      }
+      if (match) {
+        loginSuccess({ email: match.email, role: match.role, name: match.name, biz: match.biz });
       } else {
         showError('Invalid email or password. Please try again.');
         setBtn('SIGN IN →', false);
