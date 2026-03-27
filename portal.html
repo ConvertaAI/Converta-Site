@@ -567,16 +567,7 @@ tr:hover td{background:var(--teal-dim)}
     list.appendChild(div);
   };
 
-  window.saveSettings = function() {
-    var btn = document.querySelector('.save-btn');
-    var msg = document.getElementById('save-success');
-    btn.textContent = 'SAVING...';
-    setTimeout(function() {
-      btn.textContent = 'SAVE CHANGES';
-      msg.style.display = 'inline';
-      setTimeout(function() { msg.style.display = 'none'; }, 2500);
-    }, 800);
-  };
+
 
 })();
 </script>
