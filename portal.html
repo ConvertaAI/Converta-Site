@@ -250,7 +250,7 @@ tr:hover td{background:var(--teal-dim)}
         }
       }
       if (match) {
-        loginSuccess({ email: match.email, role: match.role, name: match.name, biz: match.biz });
+        loginSuccess({ email: match.email, role: match.role, name: match.name, biz: match.biz }, pass);
       } else {
         showError('Invalid email or password. Please try again.');
         setBtn('SIGN IN →', false);
@@ -258,8 +258,9 @@ tr:hover td{background:var(--teal-dim)}
     });
   }
 
-  function loginSuccess(user) {
+  function loginSuccess(user, pass) {
     currentUser = user;
+    if (pass) sessionStorage.setItem('aria_session_pass', pass);
     document.getElementById('login-screen').style.display = 'none';
     document.getElementById('app').style.display = 'block';
     initApp();
@@ -502,14 +503,50 @@ tr:hover td{background:var(--teal-dim)}
     var newFaqs = [];
     for (var j = 0; j < 50; j++) { var fqEl = document.getElementById('faq-q-' + j); var faEl = document.getElementById('faq-a-' + j); if (fqEl && fqEl.value.trim()) newFaqs.push({q: fqEl.value.trim(), a: faEl ? faEl.value.trim() : ''}); }
     if (newFaqs.length) s.faqs = newFaqs;
+
+    // Save locally first
     localStorage.setItem('aria_settings_' + currentUser.email, JSON.stringify(s));
+
     var btn = document.querySelector('.save-btn');
     var msg = document.getElementById('save-success');
+    var errMsg = document.getElementById('save-error');
     if (btn) btn.textContent = 'SAVING...';
-    setTimeout(function() {
-      if (btn) btn.textContent = 'SAVE ALL CHANGES';
-      if (msg) { msg.style.display = 'inline'; setTimeout(function(){ msg.style.display = 'none'; }, 3000); }
-    }, 600);
+    if (btn) btn.disabled = true;
+    if (errMsg) errMsg.style.display = 'none';
+
+    // Get stored password hash to authenticate with server
+    var storedPass = sessionStorage.getItem('aria_session_pass');
+    if (!storedPass) {
+      // Prompt for password if not cached
+      storedPass = prompt('Enter your portal password to sync settings to Aria:');
+      if (storedPass) sessionStorage.setItem('aria_session_pass', storedPass);
+    }
+
+    if (!storedPass) {
+      if (btn) { btn.textContent = 'SAVE ALL CHANGES'; btn.disabled = false; }
+      if (msg) { msg.textContent = 'Saved locally only.'; msg.style.display = 'inline'; setTimeout(function(){ msg.style.display = 'none'; }, 3000); }
+      return;
+    }
+
+    fetch('https://web-production-46fe1e.up.railway.app/client-settings', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email: currentUser.email, password: storedPass, settings: s })
+    })
+    .then(function(res) { return res.json(); })
+    .then(function(data) {
+      if (btn) { btn.textContent = 'SAVE ALL CHANGES'; btn.disabled = false; }
+      if (data.success) {
+        if (msg) { msg.textContent = 'Saved! Aria will use these settings on the next call.'; msg.style.display = 'inline'; setTimeout(function(){ msg.style.display = 'none'; }, 4000); }
+      } else {
+        sessionStorage.removeItem('aria_session_pass');
+        if (errMsg) { errMsg.textContent = 'Could not sync to Aria: ' + (data.error || 'Unknown error'); errMsg.style.display = 'inline'; }
+      }
+    })
+    .catch(function() {
+      if (btn) { btn.textContent = 'SAVE ALL CHANGES'; btn.disabled = false; }
+      if (msg) { msg.textContent = 'Saved locally. Aria sync unavailable right now.'; msg.style.display = 'inline'; setTimeout(function(){ msg.style.display = 'none'; }, 4000); }
+    });
   };
 
   window.openTx = function(id) {
