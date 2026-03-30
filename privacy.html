@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Privacy Policy — Converta.AI</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Rajdhani:wght@300;400;500;600;700&family=JetBrains+Mono:wght@300;400;500&display=swap" rel="stylesheet"/>
+<style>
+:root{
+  --teal:#00ffe5;--teal-mid:#00d4aa;--teal-dim:rgba(0,255,229,.08);--teal-border:rgba(0,255,229,.22);
+  --gold:#f0c040;--red:#ff4060;
+  --bg:#020408;--bg2:#030609;--surface:rgba(0,255,229,.03);
+  --text:#e8f5f2;--text-dim:#7aada0;--text-faint:rgba(232,245,242,.2);
+  --mono:'JetBrains Mono',monospace;--display:'Orbitron',sans-serif;--body:'Rajdhani',sans-serif;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:var(--body);background:var(--bg);color:var(--text);line-height:1.7;overflow-x:hidden}
+body::before{content:'';position:fixed;inset:0;background-image:linear-gradient(rgba(0,255,229,.03) 1px,transparent 1px),linear-gradient(90deg,rgba(0,255,229,.03) 1px,transparent 1px);background-size:54px 54px;pointer-events:none;z-index:0}
+a{color:var(--teal);text-decoration:none}
+a:hover{text-decoration:underline}
+
+nav{position:fixed;top:0;left:0;right:0;z-index:500;padding:20px 0;background:rgba(2,4,8,.92);backdrop-filter:blur(20px);border-bottom:1px solid rgba(0,255,229,.07)}
+.nav-inner{max-width:1100px;margin:0 auto;padding:0 32px;display:flex;justify-content:space-between;align-items:center}
+.nav-logo{font-family:var(--display);font-size:17px;font-weight:900;letter-spacing:2px;display:flex;align-items:center;gap:10px;color:var(--text)}
+.logo-mark{width:28px;height:28px;border:1.5px solid var(--teal);border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:13px;font-family:var(--display);font-weight:900;color:var(--teal);background:var(--teal-dim)}
+.nav-back{font-family:var(--mono);font-size:11px;letter-spacing:1.5px;text-transform:uppercase;color:var(--text-dim);transition:color .2s}
+.nav-back:hover{color:var(--teal);text-decoration:none}
+
+.page-wrap{max-width:780px;margin:0 auto;padding:120px 32px 80px;position:relative;z-index:1}
+.page-eyebrow{font-family:var(--mono);font-size:11px;letter-spacing:3px;text-transform:uppercase;color:var(--teal);margin-bottom:16px}
+.page-title{font-family:var(--display);font-size:36px;font-weight:900;letter-spacing:1px;color:var(--text);margin-bottom:8px}
+.page-sub{font-family:var(--mono);font-size:12px;color:var(--text-dim);margin-bottom:48px;letter-spacing:.5px}
+.divider{height:1px;background:linear-gradient(90deg,var(--teal-border),transparent);margin:40px 0}
+
+h2{font-family:var(--display);font-size:16px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--teal);margin:40px 0 16px}
+h3{font-family:var(--mono);font-size:13px;font-weight:500;letter-spacing:1px;color:var(--text);margin:24px 0 10px}
+p{font-size:16px;color:var(--text-dim);margin-bottom:16px;line-height:1.8}
+ul{margin:0 0 16px 20px}
+ul li{font-size:16px;color:var(--text-dim);margin-bottom:8px;line-height:1.8}
+ul li::marker{color:var(--teal)}
+
+.highlight-box{background:var(--teal-dim);border:1px solid var(--teal-border);border-radius:8px;padding:20px 24px;margin:24px 0}
+.highlight-box p{margin:0;font-size:15px;color:var(--text)}
+
+.data-table{width:100%;border-collapse:collapse;margin:20px 0}
+.data-table th{text-align:left;font-family:var(--mono);font-size:11px;letter-spacing:1.5px;text-transform:uppercase;color:var(--text-dim);padding:10px 14px;border-bottom:1px solid rgba(0,255,229,.15);background:rgba(0,255,229,.04)}
+.data-table td{font-size:14px;color:var(--text-dim);padding:12px 14px;border-bottom:1px solid rgba(0,255,229,.06);vertical-align:top;line-height:1.6}
+.data-table tr:last-child td{border-bottom:none}
+
+footer{border-top:1px solid rgba(0,255,229,.08);padding:40px 0;margin-top:80px;background:rgba(0,255,229,.01)}
+.footer-inner{max-width:1100px;margin:0 auto;padding:0 32px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:20px}
+.footer-logo{font-family:var(--display);font-size:15px;font-weight:900;letter-spacing:2px}
+.footer-links{display:flex;gap:24px;flex-wrap:wrap}
+.footer-links a{font-family:var(--mono);font-size:11px;letter-spacing:1.5px;text-transform:uppercase;color:var(--text-dim);transition:color .15s}
+.footer-links a:hover{color:var(--teal)}
+.footer-copy{font-family:var(--mono);font-size:10px;color:var(--text-faint);letter-spacing:1px;margin-top:5px}
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="nav-inner">
+    <a href="/" class="nav-logo" style="text-decoration:none">
+      <div class="logo-mark">C</div>
+      <span style="color:var(--teal)">CONVERTA</span><span style="opacity:.3">.AI</span>
+    </a>
+    <a href="/" class="nav-back">← Back to home</a>
+  </div>
+</nav>
+
+<div class="page-wrap">
+  <div class="page-eyebrow">Legal</div>
+  <h1 class="page-title">Privacy Policy</h1>
+  <div class="page-sub">Last updated: March 30, 2026</div>
+
+  <div class="highlight-box">
+    <p>Converta.AI is committed to protecting the privacy of our clients and their callers. This policy explains what data we collect, how we use it, and your rights regarding that data.</p>
+  </div>
+
+  <div class="divider"></div>
+
+  <h2>1. Who We Are</h2>
+  <p>Converta AI LLC operates the Converta.AI platform — an AI-powered phone receptionist service for local businesses. Our contact email is <a href="mailto:support.converta@gmail.com">support.converta@gmail.com</a>. We are based in Atlanta, Georgia.</p>
+
+  <h2>2. Information We Collect</h2>
+  <h3>From business clients (you):</h3>
+  <ul>
+    <li>Name, email address, and business information provided during onboarding</li>
+    <li>Payment information processed securely by Stripe — we never store card numbers</li>
+    <li>Business configuration settings including greetings, FAQs, and appointment questions</li>
+    <li>Login credentials stored as one-way cryptographic hashes — we cannot read your password</li>
+  </ul>
+  <h3>From your callers:</h3>
+  <ul>
+    <li>Phone number (provided automatically by the telephone network)</li>
+    <li>Name, callback number, and reason for calling (collected by Aria during the call)</li>
+    <li>Real-time transcription of the call conversation</li>
+    <li>Call metadata including date, time, and duration</li>
+  </ul>
+  <h3>Automatically collected:</h3>
+  <ul>
+    <li>Server logs including IP addresses and request timestamps for security and debugging</li>
+    <li>Usage data such as call counts and response times</li>
+  </ul>
+
+  <h2>3. How We Use Your Information</h2>
+  <table class="data-table">
+    <thead>
+      <tr><th>Data</th><th>How we use it</th></tr>
+    </thead>
+    <tbody>
+      <tr><td>Client contact info</td><td>Account management, billing, service communications</td></tr>
+      <tr><td>Payment info</td><td>Processed by Stripe — we never store card details</td></tr>
+      <tr><td>Business configuration</td><td>Configuring Aria to answer calls on your behalf</td></tr>
+      <tr><td>Caller phone numbers</td><td>Abuse protection, missed call text-back, lead notifications</td></tr>
+      <tr><td>Call transcripts</td><td>Delivered to your notification email, displayed in your portal</td></tr>
+      <tr><td>Server logs</td><td>Security monitoring, debugging, abuse prevention</td></tr>
+    </tbody>
+  </table>
+  <p>We do not sell, rent, or share your data or your callers' data with third parties for marketing purposes.</p>
+
+  <h2>4. Third-Party Services</h2>
+  <p>Converta.AI uses the following third-party services to operate. Each has their own privacy policy:</p>
+  <ul>
+    <li><strong style="color:var(--text)">Twilio</strong> — phone call routing and SMS. Caller phone numbers and audio pass through Twilio's infrastructure. <a href="https://www.twilio.com/en-us/legal/privacy" target="_blank">Twilio Privacy Policy</a></li>
+    <li><strong style="color:var(--text)">Deepgram</strong> — real-time speech-to-text transcription of calls. Audio is processed by Deepgram and not retained beyond transcription. <a href="https://deepgram.com/privacy" target="_blank">Deepgram Privacy Policy</a></li>
+    <li><strong style="color:var(--text)">Anthropic</strong> — AI language model powering Aria's responses. Conversation context is sent to Anthropic's API per call. <a href="https://www.anthropic.com/privacy" target="_blank">Anthropic Privacy Policy</a></li>
+    <li><strong style="color:var(--text)">Stripe</strong> — payment processing. Card data is handled entirely by Stripe and never touches our servers. <a href="https://stripe.com/privacy" target="_blank">Stripe Privacy Policy</a></li>
+    <li><strong style="color:var(--text)">Resend</strong> — transactional email delivery for lead notifications. <a href="https://resend.com/privacy" target="_blank">Resend Privacy Policy</a></li>
+    <li><strong style="color:var(--text)">Railway</strong> — server hosting. Our backend runs on Railway's infrastructure. <a href="https://railway.app/legal/privacy" target="_blank">Railway Privacy Policy</a></li>
+  </ul>
+
+  <h2>5. Data Retention</h2>
+  <p>Call transcripts and lead data are retained for as long as your subscription is active and for 30 days after cancellation, after which they are permanently deleted.</p>
+  <p>Billing records are retained as required by law (typically 7 years).</p>
+  <p>Server logs are retained for 90 days for security purposes.</p>
+
+  <h2>6. Data Security</h2>
+  <p>We take reasonable technical measures to protect your data including:</p>
+  <ul>
+    <li>All data transmitted over HTTPS/TLS encryption</li>
+    <li>Passwords stored as SHA-256 hashes — never in plain text</li>
+    <li>API keys and credentials stored as environment variables — never in source code</li>
+    <li>Rate limiting and abuse protection on all endpoints</li>
+  </ul>
+  <p>No system is completely secure. In the event of a data breach affecting your account, we will notify you by email within 72 hours of discovery.</p>
+
+  <h2>7. Your Rights</h2>
+  <p>You have the right to:</p>
+  <ul>
+    <li>Request a copy of all data we hold about you and your callers</li>
+    <li>Request correction of inaccurate data</li>
+    <li>Request deletion of your data — we will delete all records within 30 days of a verified request</li>
+    <li>Opt out of any non-essential communications</li>
+    <li>Port your data — we will provide your call logs and settings in a machine-readable format upon request</li>
+  </ul>
+  <p>To exercise any of these rights, email <a href="mailto:support.converta@gmail.com">support.converta@gmail.com</a>. We will respond within 30 days.</p>
+
+  <h2>8. Caller Privacy</h2>
+  <p>As a Converta.AI client, you are responsible for informing your callers that their calls may be transcribed by an AI system. We recommend including a disclosure in Aria's greeting script.</p>
+  <p>Caller data collected by Aria (name, phone number, reason for call) is delivered exclusively to you — the business owner — and is not used by Converta.AI for any other purpose.</p>
+
+  <h2>9. Children's Privacy</h2>
+  <p>Converta.AI is a business-to-business service not directed at children under 13. We do not knowingly collect personal information from children.</p>
+
+  <h2>10. California Privacy Rights (CCPA)</h2>
+  <p>If you are a California resident, you have additional rights under the California Consumer Privacy Act including the right to know what personal information we collect, the right to delete personal information, and the right to opt out of the sale of personal information. We do not sell personal information. To exercise your rights, contact us at <a href="mailto:support.converta@gmail.com">support.converta@gmail.com</a>.</p>
+
+  <h2>11. Changes to This Policy</h2>
+  <p>We may update this Privacy Policy from time to time. We will notify you of material changes via email at least 14 days before they take effect. The date at the top of this page reflects the most recent update.</p>
+
+  <h2>12. Contact</h2>
+  <p>For privacy questions or requests, contact:</p>
+  <p style="color:var(--text)"><strong>Converta AI LLC</strong><br>
+  Email: <a href="mailto:support.converta@gmail.com">support.converta@gmail.com</a><br>
+  Atlanta, Georgia</p>
+
+</div>
+
+<footer>
+  <div class="footer-inner">
+    <div>
+      <div class="footer-logo"><span style="color:var(--teal)">CONVERTA</span><span style="opacity:.22">.AI</span></div>
+      <div class="footer-copy">© 2026 CONVERTA AI LLC · ALL RIGHTS RESERVED</div>
+    </div>
+    <div class="footer-links">
+      <a href="/privacy">Privacy</a>
+      <a href="/terms">Terms</a>
+      <a href="mailto:support.converta@gmail.com">Contact</a>
+      <a href="/portal">Client Login</a>
+    </div>
+  </div>
+</footer>
+
+</body>
+</html>
