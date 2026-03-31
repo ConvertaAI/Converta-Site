@@ -629,8 +629,11 @@ tr:hover td{background:var(--teal-dim)}
   };
 
   window.openTx = function(id) {
-    var call = MOCK_CALLS.find(function(c){return c.id===id;});
-    if (!call || !call.transcript.length) return;
+    // Search both real and mock calls
+    var allCalls = REAL_CALLS.length ? REAL_CALLS : MOCK_CALLS;
+    var call = allCalls.find(function(c){return c.id===id;});
+    if (!call) call = MOCK_CALLS.find(function(c){return c.id===id;});
+    if (!call || !call.transcript || !call.transcript.length) return;
     document.getElementById('modal-title').textContent = 'Transcript — ' + call.caller + ' · ' + call.time;
     document.getElementById('modal-body').innerHTML = call.transcript.map(function(m) {
       return '<div class="msg ' + (m.r==='aria'?'aria-msg':'') + '"><div class="msg-role ' + m.r + '">' + (m.r==='aria'?'Aria':'Caller') + '</div><div class="msg-text">' + m.t + '</div></div>';
