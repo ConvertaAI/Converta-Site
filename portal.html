@@ -267,6 +267,8 @@ tr:hover td{background:var(--teal-dim)}
   }
 
   function logout() {
+    stopAutoRefresh();
+    REAL_CALLS = [];
     currentUser = null;
     document.getElementById('login-screen').style.display = 'flex';
     document.getElementById('app').style.display = 'none';
@@ -415,14 +417,60 @@ tr:hover td{background:var(--teal-dim)}
       .catch(function(e) { console.log('Settings error:', e.message); });
   }
 
+  var refreshTimer = null;
+
+  function startAutoRefresh() {
+    if (refreshTimer) clearInterval(refreshTimer);
+    refreshTimer = setInterval(function() {
+      var email = currentUser ? currentUser.email.toLowerCase().trim() : null;
+      if (!email) return;
+      sbFetch('call_logs?owner_email=eq.' + encodeURIComponent(email) + '&order=created_at.desc&limit=100')
+        .then(function(calls) {
+          if (!calls || calls.error || !calls.length) return;
+          var prevCount = REAL_CALLS.length;
+          REAL_CALLS = calls.map(function(c) {
+            return {
+              id:         c.call_sid,
+              caller:     c.caller_name  || 'Unknown',
+              phone:      c.caller_phone || 'Unknown',
+              reason:     c.reason       || 'Unknown',
+              duration:   c.duration_seconds ? Math.floor(c.duration_seconds/60) + 'm ' + (c.duration_seconds%60) + 's' : '0m 0s',
+              time:       new Date(c.created_at).toLocaleString(),
+              status:     c.status || 'captured',
+              transcript: (c.transcript || []).map(function(m) {
+                return { r: (m.role==='user'||m.r==='caller') ? 'caller' : 'aria', t: m.content||m.t||'' };
+              }),
+            };
+          });
+          // Only re-render if new calls came in
+          if (REAL_CALLS.length !== prevCount) {
+            console.log('New call detected — refreshing');
+            var p = activePage;
+            activePage = null;
+            if (p) showPage(p);
+          }
+        })
+        .catch(function(){});
+    }, 30000); // every 30 seconds
+  }
+
+  function stopAutoRefresh() {
+    if (refreshTimer) { clearInterval(refreshTimer); refreshTimer = null; }
+  }
+
   function initApp() {
     document.getElementById('user-avatar').textContent = currentUser.name.charAt(0).toUpperCase();
     document.getElementById('user-name-el').textContent = currentUser.name;
     document.getElementById('user-biz-el').textContent = currentUser.biz;
     document.getElementById('role-badge').textContent = '— ' + currentUser.role.charAt(0).toUpperCase() + currentUser.role.slice(1);
 
-    // Load real data from server
+    // Load real data from Supabase
     loadRealData();
+
+    // Auto-refresh every 15 seconds
+    setInterval(function() {
+      loadRealData();
+    }, 15000);
 
     var nav = document.getElementById('sidebar-nav');
     nav.innerHTML = '';
@@ -442,6 +490,7 @@ tr:hover td{background:var(--teal-dim)}
 
     var first = items.find(function(i) { return i.id; });
     if (first) showPage(first.id);
+    startAutoRefresh();
   }
 
   function showPage(id) {
