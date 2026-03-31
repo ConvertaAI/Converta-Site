@@ -360,11 +360,13 @@ tr:hover td{background:var(--teal-dim)}
 
   function loadRealData() {
     var email = currentUser.email.toLowerCase().trim();
+    console.log('Loading real data for:', email);
 
-    // Load call logs directly from Supabase
     sbFetch('call_logs?owner_email=eq.' + encodeURIComponent(email) + '&order=created_at.desc&limit=100')
       .then(function(calls) {
-        if (calls && calls.length) {
+        console.log('Supabase returned:', calls);
+        if (!calls || calls.error) { console.log('Supabase error:', calls); return; }
+        if (calls.length) {
           REAL_CALLS = calls.map(function(c) {
             return {
               id:         c.call_sid,
@@ -382,12 +384,16 @@ tr:hover td{background:var(--teal-dim)}
               }),
             };
           });
+          console.log('REAL_CALLS set:', REAL_CALLS.length);
           var p = activePage;
           activePage = null;
+          console.log('Re-rendering page:', p);
           if (p) showPage(p);
+        } else {
+          console.log('No calls returned from Supabase');
         }
       })
-      .catch(function(e) { console.log('Call logs error:', e.message); });
+      .catch(function(e) { console.log('Call logs fetch error:', e.message); });
 
     // Load settings directly from Supabase
     sbFetch('client_settings?email=eq.' + encodeURIComponent(email) + '&limit=1')
