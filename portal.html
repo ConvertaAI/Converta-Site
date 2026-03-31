@@ -466,7 +466,7 @@ tr:hover td{background:var(--teal-dim)}
   function callsTable(calls) {
     var rows = calls.map(function(c) {
       var txBtn = c.transcript.length
-        ? '<button onclick="openTx(' + c.id + ')" style="background:var(--teal-dim);border:1px solid var(--border);color:var(--teal);padding:4px 10px;border-radius:4px;font-size:11px;cursor:pointer">View</button>'
+        ? '<button onclick="openTx(\'' + c.id + '\')" style="background:var(--teal-dim);border:1px solid var(--border);color:var(--teal);padding:4px 10px;border-radius:4px;font-size:11px;cursor:pointer">View</button>'
         : '<span style="color:var(--text-muted);font-size:11px">—</span>';
       return '<tr><td style="font-weight:500">' + c.caller + '</td><td style="color:var(--text-dim);font-size:12px">' + c.phone + '</td><td style="font-size:13px">' + c.reason + '</td><td style="color:var(--text-dim);font-size:12px">' + c.duration + '</td><td style="color:var(--text-dim);font-size:12px">' + c.time + '</td><td><span class="badge ' + (c.status==='captured'?'badge-green':c.status==='urgent'?'badge-red':'badge-teal') + '">' + c.status + '</span></td><td>' + txBtn + '</td></tr>';
     }).join('');
