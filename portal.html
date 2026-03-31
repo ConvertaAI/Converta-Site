@@ -299,7 +299,7 @@ tr:hover td{background:var(--teal-dim)}
 
   var MOCK_CLIENTS = [
     {id:1, name:'Bright Smile Dental', owner:'Dr. Marcus B.', plan:'Growth', status:'active', calls:148, leads:127, mrr:397, industry:'Dental'},
-    {id:2, name:'Luxe Med Spa', owner:'Amanda Chen', plan:'Pro', status:'active', calls:312, leads:289, mrr:697, industry:'Med Spa'},
+    {id:2, name:'Luxe Med Spa', owner:'Amanda Chen', plan:'Pro', status:'active', calls:312, leads:289, mrr:897, industry:'Med Spa'},
     {id:3, name:'Premier Roofing Co.', owner:'Dale Hurst', plan:'Starter', status:'active', calls:89, leads:71, mrr:197, industry:'Roofing'},
     {id:4, name:'Mitchell & Associates', owner:'James Mitchell', plan:'Growth', status:'active', calls:203, leads:188, mrr:397, industry:'Law'},
     {id:5, name:'The Golden Fork', owner:'Sofia Reyes', plan:'Starter', status:'trial', calls:12, leads:9, mrr:0, industry:'Restaurant'},
@@ -342,12 +342,81 @@ tr:hover td{background:var(--teal-dim)}
   }
 
   var activePage = null;
+  var REAL_CALLS = [];
+  var REAL_SETTINGS = null;
+
+  var SUPABASE_URL  = 'https://jbnmlidrgcvsojbfbdtt.supabase.co';
+  var SUPABASE_ANON = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Impibm1saWRyZ2N2c29qYmZiZHR0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ4OTIwMTgsImV4cCI6MjA5MDQ2ODAxOH0.YeS-RF2RchwaFkLbDts3SiDl-_ca0UsuxpuZ_p37VSM';
+
+  function sbFetch(path) {
+    return fetch(SUPABASE_URL + '/rest/v1/' + path, {
+      headers: {
+        'apikey': SUPABASE_ANON,
+        'Authorization': 'Bearer ' + SUPABASE_ANON,
+        'Content-Type': 'application/json',
+      }
+    }).then(function(r) { return r.json(); });
+  }
+
+  function loadRealData() {
+    var email = currentUser.email.toLowerCase().trim();
+
+    // Load call logs directly from Supabase
+    sbFetch('call_logs?owner_email=eq.' + encodeURIComponent(email) + '&order=created_at.desc&limit=100')
+      .then(function(calls) {
+        if (calls && calls.length) {
+          REAL_CALLS = calls.map(function(c) {
+            return {
+              id:         c.call_sid,
+              caller:     c.caller_name  || 'Unknown',
+              phone:      c.caller_phone || 'Unknown',
+              reason:     c.reason       || 'Unknown',
+              duration:   c.duration_seconds ? Math.floor(c.duration_seconds/60) + 'm ' + (c.duration_seconds%60) + 's' : '0m 0s',
+              time:       new Date(c.created_at).toLocaleString(),
+              status:     c.status || 'captured',
+              transcript: (c.transcript || []).map(function(m) {
+                return {
+                  r: (m.role === 'user' || m.r === 'caller') ? 'caller' : 'aria',
+                  t: m.content || m.t || ''
+                };
+              }),
+            };
+          });
+          var p = activePage;
+          activePage = null;
+          if (p) showPage(p);
+        }
+      })
+      .catch(function(e) { console.log('Call logs error:', e.message); });
+
+    // Load settings directly from Supabase
+    sbFetch('client_settings?email=eq.' + encodeURIComponent(email) + '&limit=1')
+      .then(function(rows) {
+        if (rows && rows.length) {
+          var s = rows[0];
+          localStorage.setItem('aria_settings_' + email, JSON.stringify({
+            businessName: s.business_name || '',
+            greeting:     s.greeting      || '',
+            closing:      s.closing       || '',
+            hours:        s.hours         || '',
+            urgent:       s.urgent        || '',
+            never:        s.never         || '',
+            questions:    s.questions     || [],
+            faqs:         s.faqs          || [],
+          }));
+        }
+      })
+      .catch(function(e) { console.log('Settings error:', e.message); });
+  }
 
   function initApp() {
     document.getElementById('user-avatar').textContent = currentUser.name.charAt(0).toUpperCase();
     document.getElementById('user-name-el').textContent = currentUser.name;
     document.getElementById('user-biz-el').textContent = currentUser.biz;
     document.getElementById('role-badge').textContent = '— ' + currentUser.role.charAt(0).toUpperCase() + currentUser.role.slice(1);
+
+    // Load real data from server
+    loadRealData();
 
     var nav = document.getElementById('sidebar-nav');
     nav.innerHTML = '';
@@ -431,11 +500,15 @@ tr:hover td{background:var(--teal-dim)}
   }
 
   function renderClientLeads() {
-    return '<div class="page-title">Lead inbox</div><div class="page-sub">All leads captured by Aria</div>' + callsTable(MOCK_CALLS);
+    var calls = REAL_CALLS.length ? REAL_CALLS : MOCK_CALLS;
+    var sub = REAL_CALLS.length ? REAL_CALLS.length + ' leads captured' : 'Demo data — real leads appear after calls';
+    return '<div class="page-title">Lead inbox</div><div class="page-sub">' + sub + '</div>' + callsTable(calls);
   }
 
   function renderClientCalls() {
-    return '<div class="page-title">Call logs</div><div class="page-sub">Full history with transcripts</div>' + callsTable(MOCK_CALLS);
+    var calls = REAL_CALLS.length ? REAL_CALLS : MOCK_CALLS;
+    var sub = REAL_CALLS.length ? REAL_CALLS.length + ' calls' : 'Demo data — real calls appear after first call';
+    return '<div class="page-title">Call logs</div><div class="page-sub">' + sub + '</div>' + callsTable(calls);
   }
 
   function loadSettings() {
